@@ -10,7 +10,6 @@ using MyShop.CORE.Helpers.ResultPattern;
 using MyShop.CORE.Identity;
 using MyShop.CORE.Interfaces;
 using MyShop.CORE.Shared;
-using Org.BouncyCastle.Asn1.Cms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
