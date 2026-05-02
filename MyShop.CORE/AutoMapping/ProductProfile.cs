@@ -40,8 +40,11 @@ namespace MyShop.CORE.AutoMapping
                 .ForMember(dest => dest.AttributeName, opt => opt.MapFrom(src => src.Attribute != null ? src.Attribute.Name : string.Empty))
                 .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value));
 
-            CreateMap<AddProductVariantDto, ProductVariant>();
-            CreateMap<AddVariantAttributeDto, VariantAttribute>();
+            CreateMap<AddProductVariantDto, ProductVariant>()
+                .ForMember(des=>des.VariantAttributes , src=>src.MapFrom(x=>x.Attributes))
+                .ReverseMap();
+            CreateMap<AddVariantAttributeDto, VariantAttribute>()
+                .ReverseMap();
         }
     }
 }

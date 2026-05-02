@@ -171,39 +171,37 @@ namespace MyShop.CORE.Implmentations
 
         public async Task<PageResult<ProfileDto>> SearchCustomersAsync(string query)
         {
-            var customerIds = await _identityService.GetUserIdsInRoleAsync("Customer");
-            var users = await _unitOfWork.Users.FindAllAsync(
-                u => customerIds.Contains(u.Id.ToString()) && (u.Email.Contains(query) || (u.FirstName + " " + u.LastName).Contains(query)),
-                includes: new[] { nameof(ApplicationUser.userPhoto) }
+            var customers = await _unitOfWork.Customers.FindAllAsync(
+                u => u.User.Email.Contains(query) || (u.User.FirstName + " " + u.User.LastName).Contains(query),
+                includes: new[] { "User", "User.userPhoto" }
             );
 
             return new PageResult<ProfileDto>
             {
-                Items = _mapper.Map<List<ProfileDto>>(users.ToList()),
-                TotalItems = users.Count()
+                Items = customers.Select(c => _mapper.Map<ProfileDto>(c.User)).ToList(),
+                TotalItems = customers.Count()
             };
         }
 
         public async Task<PageResult<ProfileDto>> GetCustomersAsync()
         {
-            var countTask = _unitOfWork.Customers.CountAsync();
+            var count = await _unitOfWork.Customers.CountAsync();
 
-            var customersTask = _unitOfWork.Customers.FindAllAsync(
-                take: 5,
-                includes: new[] { nameof(Customer.User) }
+            var customers = await _unitOfWork.Customers.FindAllAsync(
+                take: 8,
+                includes: new[] { "User", "User.userPhoto" }
             );
 
-            await Task.WhenAll(countTask, customersTask);
+            
 
-            var totalCount = await countTask;
-            var customers = (List<Customer>) await customersTask;
+            
 
             return new PageResult<ProfileDto>
             {
                 Items = _mapper.Map<List<ProfileDto>>(
                     customers.Select(c => c.User)
                 ),
-                TotalItems = totalCount,
+                TotalItems = count,
                 Page = 1,
                 PageSize = 8
             };

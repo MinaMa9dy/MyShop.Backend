@@ -10,7 +10,7 @@ namespace MyShop.CORE.Dtos.Order
 {
     public class AddOrderDto
     {
-        public Guid CustomerId { get; set; }
+        
         [Phone]
         public string PhoneNumber { get; set; }
         public CitiesOptions City { get; set; }

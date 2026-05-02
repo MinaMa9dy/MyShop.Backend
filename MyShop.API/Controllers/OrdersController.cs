@@ -38,11 +38,11 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             
-            var result = await _orderService.GetOrdersByUserId(userId);
+            var result = await _orderService.GetOrdersByCustomerId(userId);
             if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
             return Ok(result);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(Guid id)
         {
@@ -52,29 +52,33 @@ namespace MyShop.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOrder(AddOrderDto? order)
+        public async Task<IActionResult> CreateOrder(AddOrderDto order)
         {
-            if (order == null) return BadRequest(new { message = "Order cannot be null" });
-            
-            var result = await _orderService.CreateOrder(order);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (userIdClaim == null) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
+            var result = await _orderService.CreateOrder(userId, order);
             if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
             return Ok(result);
         }
 
         [Authorize(Roles="Seller")]
         [HttpGet("SellerOrders")]
-        public async Task<IActionResult> GetOrdersBySellerId([FromQuery] Guid sellerId)
+        public async Task<IActionResult> GetOrdersBySellerId()
         {
-            var result = await _orderService.GetOrdersBySellerId(sellerId);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (userIdClaim == null) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
+            var result = await _orderService.GetOrdersBySellerId(userId);
             if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
             return Ok(result);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPatch("{id}/status")]
-        public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateOrderStatusDto dto)
+        public async Task<IActionResult> UpdateOrderStatus(UpdateOrderStatusDto dto)
         {
-            var result = await _orderService.UpdateOrderStatusAsync(id, dto.Status);
+            var result = await _orderService.UpdateOrderStatusAsync(dto);
             if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
             return Ok(result);
         }
@@ -82,7 +86,10 @@ namespace MyShop.API.Controllers
         [HttpPatch("{id}/cancel")]
         public async Task<IActionResult> CancelOrder(Guid id)
         {
-            var result = await _orderService.CancelOrderAsync(id);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (userIdClaim == null) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
+            var result = await _orderService.CancelOrderAsync(userId, id);
             if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
             return Ok(result);
         }

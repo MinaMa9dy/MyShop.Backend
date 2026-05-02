@@ -21,7 +21,7 @@ namespace MyShop.API.Controllers
         }
         [Authorize(Roles ="Admin")]
         [HttpPost("AddCategory")]
-        public async Task<IActionResult> AddCategory(AddCategoryDto? addCategoryDto)
+        public async Task<IActionResult> AddCategory(AddCategoryDto addCategoryDto)
         {
             var result = await _categoryService.AddCategoryAsync(addCategoryDto);
             if(result.IsSuccess == false)

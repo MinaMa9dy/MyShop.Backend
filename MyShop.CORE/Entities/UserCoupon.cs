@@ -21,6 +21,7 @@ namespace MyShop.CORE.Entities
         public Coupon Coupon { get; set; }
         public bool CanUse { get; set; } = true;
         public int UserUsageCount { get; set; } = 0;
+        public int? UsageLimit { get; set; }
         public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     }
 }

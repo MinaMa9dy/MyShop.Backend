@@ -14,7 +14,7 @@ namespace MyShop.CORE.Interfaces
     {
         // Core CRUD
         Task<Result<ProductDto>> AddProductAsync(AddProductDto dto);
-        Task<Result<ProductDto>> GetProductByIdAsync(Guid? id);
+        Task<Result<ProductDto>> GetProductByIdAsync(Guid id);
         Task<Result<PageResult<ProductDto>>> GetAllProductsAsync(SearchFilterOptions? filter);
         Task<Result<ProductDto>> UpdateProductAsync(UpdateProductDto dto);
         Task<Result<bool>> DeleteProductAsync(Guid id);
@@ -32,6 +32,6 @@ namespace MyShop.CORE.Interfaces
         Task<Result<bool>> DeleteVariantAsync(Guid productId, Guid variantId);
 
         // Seller-specific
-        Task<Result<PageResult<ProductDto>>> GetProductsBySellerAsync(Guid sellerId, SearchFilterOptions filter);
+        Task<Result<PageResult<ProductDto>>> GetProductsBySellerAsync(Guid sellerId, SearchFilterOptions? filter);
     }
 }

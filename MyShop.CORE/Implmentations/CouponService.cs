@@ -122,11 +122,15 @@ namespace MyShop.CORE.Implmentations
             if (coupon.UsageLimit.HasValue && coupon.UsedCount >= coupon.UsageLimit.Value)
                 return Result<CouponResponseDto>.Failure("Coupon usage limit reached", "400");
 
+
+
             // Check if coupon is assigned to user (if not public - assuming we might want this logic)
             // For now, let's just check if user has reached their personal limit if assigned
             var userCoupon = await _unitOfWork.UserCoupons.FindAsync(uc => uc.CustomerId == userId && uc.CouponId == coupon.Id);
             if (userCoupon == null || !userCoupon.CanUse)
                 return Result<CouponResponseDto>.Failure("You cannot use this coupon", "400");
+            if (userCoupon.UserUsageCount >= userCoupon.UsageLimit)
+                return Result<CouponResponseDto>.Failure("You have reached your usage limit for this coupon", "400");
 
             var cartItems = await _unitOfWork.CartItems.FindAllAsync(ci => ci.CustomerId == userId, includes: new[] { nameof(CartItem.ProductVariant) });
             if (!cartItems.Any())
@@ -186,14 +190,18 @@ namespace MyShop.CORE.Implmentations
         {
             var existing = await _unitOfWork.UserCoupons.FindAsync(uc => uc.CustomerId == dto.UserId && uc.CouponId == dto.CouponId);
             if (existing != null)
-                return Result<bool>.Failure("Coupon already assigned to this user", "400");
+            {
+                existing.UsageLimit = dto.UsageLimit;
+                return Result<bool>.Success(await _unitOfWork.CompleteAsync() >= 0);
+            }
 
             await _unitOfWork.UserCoupons.AddAsync(new UserCoupon
             {
                 CustomerId = dto.UserId,
                 CouponId = dto.CouponId,
                 AssignedAt = DateTime.UtcNow,
-                CanUse = true
+                CanUse = true,
+                UsageLimit = dto.UsageLimit
             });
 
             return Result<bool>.Success(await _unitOfWork.CompleteAsync() > 0);
@@ -234,6 +242,7 @@ namespace MyShop.CORE.Implmentations
                 var exists = await _unitOfWork.UserCoupons.FindAsync(uc => uc.CustomerId == userId && uc.CouponId == dto.CouponId);
                 if (exists != null)
                 {
+                    exists.UsageLimit = dto.UsageLimit;
                     alreadyAssigned++;
                 }
                 else
@@ -243,7 +252,8 @@ namespace MyShop.CORE.Implmentations
                         CustomerId = userId,
                         CouponId = dto.CouponId,
                         AssignedAt = DateTime.UtcNow,
-                        CanUse = true
+                        CanUse = true,
+                        UsageLimit = dto.UsageLimit
                     });
                     newlyAssigned++;
                 }

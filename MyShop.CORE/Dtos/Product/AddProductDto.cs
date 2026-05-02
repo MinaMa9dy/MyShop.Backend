@@ -18,8 +18,8 @@ namespace MyShop.CORE.Dtos.Product
         public bool HaveSale { get; set; } = false;
         public int Popularity { get; set; } = 0;
         //public int Stock { get; set; }
-        public Guid CategoryId { get; set; } = Guid.Empty;
-        public Guid SupplierId { get; set; } = Guid.Empty;
-        public List<IFormFile>? Photos { get; set; }
+        public Guid CategoryId { get; set; }
+        public Guid SupplierId { get; set; }
+        public List<IFormFile> Photos { get; set; } = new List<IFormFile>();
     }
 }

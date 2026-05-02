@@ -17,13 +17,16 @@ namespace MyShop.API.Controllers
         public WishListController(IWishService wishService)
         {
             _wishService = wishService;
-            
-            
+
+
         }
         [HttpPost]
-        public async Task<IActionResult> AddWish(WishDto? wish)
+        public async Task<IActionResult> AddWish(WishDto wish)
         {
-            var result = await _wishService.AddWish(wish);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (userIdClaim == null) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
+            var result = await _wishService.AddWish(userId,wish);
             if (!result.IsSuccess)
             {
                 return StatusCode(int.Parse(result.Error.Code), result);
@@ -31,8 +34,11 @@ namespace MyShop.API.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> GetWishes(Guid userId)
+        public async Task<IActionResult> GetWishesByUserId()
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (userIdClaim == null) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
             var result = await _wishService.GetWishesByUserId(userId);
             if (!result.IsSuccess)
             {
@@ -40,11 +46,14 @@ namespace MyShop.API.Controllers
             }
             return Ok(result);
         }
-        [HttpDelete]
-        public async Task<IActionResult> RemoveWish([FromQuery] Guid userId, [FromQuery] Guid productId)
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> RemoveWish(Guid productId)
         {
-            var wishDto = new WishDto { CustomerId = userId, ProductId = productId };
-            var result = await _wishService.RemoveWish(wishDto);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (userIdClaim == null) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
+            var wishDto = new WishDto { ProductId = productId };
+            var result = await _wishService.RemoveWish(userId,wishDto);
             if (!result.IsSuccess)
             {
                 return StatusCode(int.Parse(result.Error.Code), result);

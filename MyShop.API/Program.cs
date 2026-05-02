@@ -46,6 +46,7 @@ namespace MyShop.API
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                    options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
                 });
 
 
@@ -164,6 +165,8 @@ namespace MyShop.API
 
             // Map SignalR hubs - allow anonymous for testing
             app.MapHub<OrderHub>("/orderhub");
+
+            
             
             // SPA fallback - serve index.html for all non-API routes
             app.MapFallbackToFile("index.html");

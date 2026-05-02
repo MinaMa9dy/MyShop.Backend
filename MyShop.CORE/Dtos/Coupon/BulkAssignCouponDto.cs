@@ -8,11 +8,8 @@ namespace MyShop.CORE.DTOs.Coupon
     {
         [Required]
         public Guid CouponId { get; set; }
-        
-        /// <summary>
-        /// If empty or null, assign to all users.
-        /// </summary>
-        public List<Guid>? UserIds { get; set; }
+        public List<Guid> UserIds { get; set; } = new List<Guid>();
+        public int? UsageLimit { get; set; }
     }
 
     public class BulkAssignResultDto

@@ -14,7 +14,6 @@ namespace MyShop.CORE.AutoMapping
         public WishProfile()
         {
             CreateMap<WishDto, WishList>()
-                //.ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.UserId))
                 .ReverseMap();
 
             

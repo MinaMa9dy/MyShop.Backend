@@ -10,5 +10,6 @@ namespace MyShop.CORE.DTOs.Coupon
         
         [Required]
         public Guid UserId { get; set; }
+        public int? UsageLimit { get; set; }
     }
 }

@@ -32,8 +32,8 @@ namespace MyShop.API.Controllers
             }
             return Ok(result.Data);
         }
-        [HttpGet("GetReviewsByProductId")]
-        public async Task<IActionResult> GetReviewsByProductId(Guid productId)
+        [HttpGet("Product/{ProductId}")]
+        public async Task<IActionResult> GetReviewsByProduct(Guid productId)
         {
             var result = await _reviewService.GetReviewsByProductId(productId);
             if (!result.IsSuccess)

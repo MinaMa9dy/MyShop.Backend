@@ -11,8 +11,8 @@ namespace MyShop.CORE.Interfaces
 {
     public interface IWishService
     {
-        Task<Result<WishDto>> AddWish(WishDto? wish);
-        Task<Result<List<WishDto>>> GetWishesByUserId(Guid? UserId);
-        Task<Result<bool>> RemoveWish(WishDto? wish);
+        Task<Result<WishDto>> AddWish(Guid userId, WishDto wish);
+        Task<Result<List<WishDto>>> GetWishesByUserId(Guid userId);
+        Task<Result<bool>> RemoveWish(Guid userId, WishDto wish);
     }
 }

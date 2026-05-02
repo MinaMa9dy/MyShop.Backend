@@ -1,4 +1,4 @@
-﻿using MyShop.CORE.Identity;
+using MyShop.CORE.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,6 +21,30 @@ namespace MyShop.INFRASTRUCTURE.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CORE.Entities.Attribute>(builder =>
+            {
+                builder.Property(a => a.Name).IsUnicode(true);
+                builder.Property(a => a.DataType).IsUnicode(true);
+            });
+
+            modelBuilder.Entity<VariantAttribute>(builder =>
+            {
+                builder.Property(va => va.Value).IsUnicode(true);
+            });
+
+            modelBuilder.Entity<Product>(builder =>
+            {
+                builder.Property(p => p.Name).IsUnicode(true);
+                builder.Property(p => p.Description).IsUnicode(true);
+            });
+
+            modelBuilder.Entity<Category>(builder =>
+            {
+                builder.Property(c => c.Name).IsUnicode(true);
+                builder.Property(c => c.Description).IsUnicode(true);
+            });
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
         public AppDbContext()

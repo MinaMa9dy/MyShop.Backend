@@ -18,6 +18,6 @@ namespace MyShop.CORE.Entities
         public Guid AttributeId { get; set; }
         [ForeignKey(nameof(AttributeId))]
         public Attribute Attribute { get; set; }
-        public string Value { get; set; } = null!;
+        public string Value { get; set; }
     }
 }

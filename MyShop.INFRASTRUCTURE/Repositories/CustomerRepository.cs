@@ -11,10 +11,8 @@ namespace MyShop.INFRASTRUCTURE.Repositories
 {
     public class CustomerRepository : BaseRepository<Customer>, ICustomerRepository
     {
-        private readonly AppDbContext _appDbContext;
         public CustomerRepository(AppDbContext appDbContext) : base(appDbContext)
         {
-            _appDbContext = appDbContext;
         }
     }
 }

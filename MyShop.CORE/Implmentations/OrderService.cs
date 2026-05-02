@@ -40,11 +40,10 @@ namespace MyShop.CORE.Implmentations
 
         }
 
-        public async Task<Result<OrderDto>> CreateOrder(AddOrderDto order)
+        public async Task<Result<OrderDto>> CreateOrder(Guid CustomerId, AddOrderDto dto)
         {
-            if (order is null) return Result<OrderDto>.Failure("Order cannot be null", "400");
 
-            var customer = await _unitOfWork.Users.FindAsync(u => u.Id == order.CustomerId);
+            var customer = await _unitOfWork.Users.FindAsync(u => u.Id == CustomerId);
             if(await _identityService.IsInRoleAsync(customer.Id.ToString(),"Customer") == false)
                 return Result<OrderDto>.Failure("User is not a customer", "400");
             
@@ -52,29 +51,32 @@ namespace MyShop.CORE.Implmentations
             if (customer is null)
                 return Result<OrderDto>.Failure("User not found", "404");
 
-            var cartItems = (List<CartItem>) await _unitOfWork.CartItems.FindAllAsync(ci => ci.CustomerId == order.CustomerId, includes: new[] { "ProductVariant.Product", "ProductVariant.Product.productPhotos" });
+            var cartItems = (List<CartItem>) await _unitOfWork.CartItems.FindAllAsync(ci => ci.CustomerId == CustomerId, includes: new[] { "ProductVariant.Product", "ProductVariant.Product.productPhotos" });
 
             if (cartItems == null || !cartItems.Any()) return Result<OrderDto>.Failure("Cart is empty", "400");
 
-            Order orderEntity = new Order();
+            Order order = new Order();
             List<OrderItem> orderItems = new List<OrderItem>();
             Guid sellerId = cartItems[0].ProductVariant.Product.SupplierId;
-
             CouponResponseDto appliedCouponData = null;
-            if (order.CouponCode.HasValue)
+            if (dto.CouponCode.HasValue)
             {
-                var couponDtoResult = await _couponService.GetCouponByIdAsync(order.CouponCode.Value);
-                if (!couponDtoResult.IsSuccess) return Result<OrderDto>.Failure("Coupon not found", "404");
+                var coupon = await _unitOfWork.Coupons.FindAsync(c => c.Id == dto.CouponCode.Value);
+                if (coupon is null)
+                    return Result<OrderDto>.Failure("Coupon not found", "404");
 
-                var couponResult = await _couponService.ValidateCouponAsync(couponDtoResult.Data.Code, order.CustomerId);
-                if (couponResult.IsSuccess)
-                {
-                    appliedCouponData = couponResult.Data;
-                }
-                else
+                var couponResult = await _couponService.ValidateCouponAsync(coupon.CouponCode, CustomerId);
+                if (!couponResult.IsSuccess)
                 {
                     return Result<OrderDto>.Failure(couponResult.Error.Message, "400");
                 }
+                var userCoupon = await _unitOfWork.UserCoupons.FindAsync(uc => uc.CouponId == coupon.Id && uc.CustomerId == CustomerId);
+                if(userCoupon is null)
+                    return Result<OrderDto>.Failure("Coupon not assigned to You", "400");
+                userCoupon.UserUsageCount++;
+                coupon.UsedCount++;
+
+
             }
 
             decimal subTotal = 0;
@@ -104,27 +106,27 @@ namespace MyShop.CORE.Implmentations
                 orderItems.Add(item);
             }
 
-            orderEntity.SellerId = sellerId;
-            orderEntity.CustomerId = order.CustomerId;
-            orderEntity.CreatedAt = DateTime.UtcNow;
-            orderEntity.Street = order.Street;
-            orderEntity.City = order.City;
-            orderEntity.BuyerName = customer.FirstName + " " + customer.LastName;
-            orderEntity.BuyerEmail = customer.Email;
-            orderEntity.BuyerPhone = order.PhoneNumber;
-            orderEntity.Status = DeliveryStatusOptions.Pending;
-            orderEntity.orderItems = orderItems;
-            orderEntity.SubTotal = subTotal;
-            orderEntity.DiscountAmount = appliedCouponData?.TotalDiscount ?? 0;
-            orderEntity.TotalAmount = appliedCouponData?.FinalSubtotal ?? subTotal;
-            orderEntity.AppliedCouponCode = appliedCouponData != null ? order.CouponCode.Value : null;
+            order.SellerId = sellerId;
+            order.CustomerId = CustomerId;
+            order.CreatedAt = DateTime.UtcNow;
+            order.Street = dto.Street;
+            order.City = dto.City;
+            order.BuyerName = customer.FirstName + " " + customer.LastName;
+            order.BuyerEmail = customer.Email;
+            order.BuyerPhone = dto.PhoneNumber;
+            order.Status = DeliveryStatusOptions.Pending;
+            order.orderItems = orderItems;
+            order.SubTotal = subTotal;
+            order.DiscountAmount = appliedCouponData?.TotalDiscount ?? 0;
+            order.TotalAmount = appliedCouponData?.FinalSubtotal ?? subTotal;
+            order.AppliedCouponCode = appliedCouponData != null ? dto.CouponCode.Value : null;
 
             _unitOfWork.CartItems.DeleteRange(cartItems);
-            await _unitOfWork.Orders.AddAsync(orderEntity);
+            await _unitOfWork.Orders.AddAsync(order);
             var result = await _unitOfWork.CompleteAsync();
             if (result == 0) return Result<OrderDto>.Failure("Failed to Save the Order", "500");
 
-            var orderResponse = _mapper.Map<OrderDto>(orderEntity);
+            var orderResponse = _mapper.Map<OrderDto>(order);
 
             try
             {
@@ -138,7 +140,7 @@ namespace MyShop.CORE.Implmentations
             return Result<OrderDto>.Success(orderResponse);
         }
 
-        public async Task<Result<List<OrderDto>>> GetOrdersByUserId(Guid? customerId)
+        public async Task<Result<List<OrderDto>>> GetOrdersByCustomerId(Guid customerId)
         {
             if (customerId == null) return Result<List<OrderDto>>.Failure("customerId is null", "400");
 
@@ -147,7 +149,7 @@ namespace MyShop.CORE.Implmentations
             return Result<List<OrderDto>>.Success(ordersResponse);
         }
 
-        public async Task<Result<List<OrderDto>>> GetOrdersBySellerId(Guid? SellerId)
+        public async Task<Result<List<OrderDto>>> GetOrdersBySellerId(Guid SellerId)
         {
             if (SellerId == null) return Result<List<OrderDto>>.Failure("SellerId is Empty", "400");
 
@@ -187,12 +189,12 @@ namespace MyShop.CORE.Implmentations
             return Result<OrderDto>.Success(orderResponse);
         }
 
-        public async Task<Result<OrderDto>> UpdateOrderStatusAsync(Guid orderId, DeliveryStatusOptions newStatus)
+        public async Task<Result<OrderDto>> UpdateOrderStatusAsync(UpdateOrderStatusDto dto)
         {
-            var order = await _unitOfWork.Orders.FindAsync(o => o.Id == orderId, new[] { nameof(Order.orderItems) });
+            var order = await _unitOfWork.Orders.FindAsync(o => o.Id == dto.OrderId, new[] { nameof(Order.orderItems) });
             if (order == null) return Result<OrderDto>.Failure("Order not found", "404");
 
-            order.Status = newStatus;
+            order.Status = dto.Status;
             order.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.Orders.Update(order);
@@ -203,14 +205,23 @@ namespace MyShop.CORE.Implmentations
             return Result<OrderDto>.Success(orderResponse);
         }
 
-        public async Task<Result<OrderDto>> CancelOrderAsync(Guid orderId)
+        public async Task<Result<OrderDto>> CancelOrderAsync(Guid userId, Guid orderId)
         {
             var order = await _unitOfWork.Orders.FindAsync(o => o.Id == orderId, new[] { nameof(Order.orderItems) });
-            if (order == null) return Result<OrderDto>.Failure("Order not found", "404");
+            var customer = await _unitOfWork.Users.FindAsync(u => u.Id == userId);
+
+            if (order == null)
+                return Result<OrderDto>.Failure("Order not found", "404");
+
+            var roles = await _identityService.GetRolesAsync(userId.ToString());
+            bool isAdminOrSeller = roles.Contains("Admin") || roles.Contains("Seller");
+            if (customer.Email  != order.BuyerEmail && !isAdminOrSeller)
+                return Result<OrderDto>.Failure("You can only cancel your own orders", "403");
+
 
             if (order.Status == DeliveryStatusOptions.Delivered || order.Status == DeliveryStatusOptions.Canceled)
             {
-                return Result<OrderDto>.Failure("Cannot cancel an order that is already delivered or cancelled", "400");
+                return Result<OrderDto>.Failure("Cannot cancel an order that is already delivered or canceled", "400");
             }
 
             order.Status = DeliveryStatusOptions.Canceled;

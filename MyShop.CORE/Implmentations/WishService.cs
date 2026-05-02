@@ -25,13 +25,13 @@ namespace MyShop.CORE.Implmentations
             _mapper = mapper;
             _identityService = identityService;
         }
-        public async Task<Result<WishDto>> AddWish(WishDto? wish)
+        public async Task<Result<WishDto>> AddWish(Guid userId, WishDto wish)
         {
             if (wish == null)
             {
                 return Result<WishDto>.Failure("Wish is null", "400");
             }
-            var user = await _unitOfWork.Users.FindAsync(u => u.Id == wish.CustomerId);
+            var user = await _unitOfWork.Users.FindAsync(u => u.Id == userId);
             if (user is null)
             {
                 return Result<WishDto>.Failure("User not found", "400");
@@ -45,12 +45,14 @@ namespace MyShop.CORE.Implmentations
             {
                 return Result<WishDto>.Failure("Product not found", "400");
             }
-            var Exist = await _unitOfWork.Wishes.FindAsync(w => w.ProductId == wish.ProductId && w.CustomerId == wish.CustomerId);
+            var Exist = await _unitOfWork.Wishes.FindAsync(w => w.ProductId == wish.ProductId && w.CustomerId == userId);
             if (Exist != null)
             {
                 return Result<WishDto>.Success(_mapper.Map<WishDto>(wish));
             }
-            await _unitOfWork.Wishes.AddAsync(_mapper.Map<WishList>(wish));
+            var wishDto = _mapper.Map<WishList>(wish);
+            wishDto.CustomerId = userId;
+            await _unitOfWork.Wishes.AddAsync(wishDto);
             var result = await _unitOfWork.CompleteAsync();
             if(result == 0)
             {
@@ -60,7 +62,7 @@ namespace MyShop.CORE.Implmentations
 
         }
 
-        public async Task<Result<List<WishDto>>> GetWishesByUserId(Guid? UserId)
+        public async Task<Result<List<WishDto>>> GetWishesByUserId(Guid UserId)
         {
             if(UserId == null)
             {
@@ -76,17 +78,17 @@ namespace MyShop.CORE.Implmentations
 
         }
 
-        public async Task<Result<bool>> RemoveWish(WishDto? wishDto)
+        public async Task<Result<bool>> RemoveWish(Guid userId, WishDto wishDto)
         {
             if (wishDto == null)
                 return Result<bool>.Failure("Wish is null", "400");
 
-            if (wishDto.CustomerId == Guid.Empty || wishDto.ProductId == Guid.Empty)
+            if (userId == Guid.Empty || wishDto.ProductId == Guid.Empty)
                 return Result<bool>.Failure("UserId or ProductId is null", "400");
 
             var wish = await _unitOfWork.Wishes
                 .FindAsync(w => w.ProductId == wishDto.ProductId &&
-                                w.CustomerId == wishDto.CustomerId);
+                                w.CustomerId == userId);
 
             if (wish == null)
                 return Result<bool>.Success(true);

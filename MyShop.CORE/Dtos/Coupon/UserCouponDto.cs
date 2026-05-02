@@ -10,6 +10,7 @@ namespace MyShop.CORE.DTOs.Coupon
         public CouponDto Coupon { get; set; } = null!;
         public bool CanUse { get; set; }
         public int UserUsageCount { get; set; }
+        public int? UsageLimit { get; set; }
         public DateTime AssignedAt { get; set; }
     }
 }

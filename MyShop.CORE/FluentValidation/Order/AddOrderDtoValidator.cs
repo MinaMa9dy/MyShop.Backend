@@ -13,8 +13,6 @@ namespace MyShop.CORE.FluentValidation.Order
         public AddOrderDtoValidator()
         {
             
-            RuleFor(o => o.CustomerId)
-                .NotEmpty().WithMessage("CustomerId shouldn't be empty");
             RuleFor(o => o.PhoneNumber)
                 .NotEmpty().WithMessage("Phone number shouldn't be empty");
 

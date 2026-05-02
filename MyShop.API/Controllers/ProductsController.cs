@@ -47,7 +47,7 @@ namespace MyShop.API.Controllers
 
         [Authorize(Roles = "Seller")]
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromForm] AddProductDto addProductDto)
+        public async Task<IActionResult> AddProduct(AddProductDto addProductDto)
         {
             var result = await _productService.AddProductAsync(addProductDto);
             if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result);
@@ -56,7 +56,7 @@ namespace MyShop.API.Controllers
 
         [Authorize(Roles = "Seller")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductDto updateProductDto)
+        public async Task<IActionResult> UpdateProduct(Guid id,UpdateProductDto updateProductDto)
         {
             updateProductDto.Id = id;
             var result = await _productService.UpdateProductAsync(updateProductDto);

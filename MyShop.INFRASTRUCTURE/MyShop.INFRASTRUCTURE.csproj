@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyShop.CORE\MyShop.CORE.csproj" />
+    <ProjectReference Include="..\MyShop.Application\MyShop.Application.csproj" />
+    <ProjectReference Include="..\MyShop.Domain\MyShop.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,7 +17,7 @@
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="MailKit" Version="4.15.1" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.12" />

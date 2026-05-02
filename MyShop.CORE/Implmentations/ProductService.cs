@@ -41,7 +41,7 @@ namespace MyShop.CORE.Implmentations
             var category = await _unitOfWork.Categories.FindAsync(c => c.Id == dto.CategoryId);
             if (category is null) return Result<ProductDto>.Failure("Category not found", "404");
 
-            var supplier = await _unitOfWork.Customers.FindAsync(c => c.UserId == dto.SupplierId, includes: new[] { nameof(Customer.User) });
+            var supplier = await _unitOfWork.Sellers.FindAsync(c => c.UserId == dto.SupplierId, includes: new[] { nameof(Customer.User) });
             if (supplier is null) return Result<ProductDto>.Failure("Supplier not found", "404");
 
             var product = _mapper.Map<Product>(dto);
@@ -60,16 +60,28 @@ namespace MyShop.CORE.Implmentations
             return await GetProductByIdAsync(product.Id);
         }
 
-        public async Task<Result<ProductDto>> GetProductByIdAsync(Guid? id)
+        public async Task<Result<ProductDto>> GetProductByIdAsync(Guid id)
         {
             if (id == null || id == Guid.Empty) return Result<ProductDto>.Failure("Product ID is required", "400");
 
             //string cacheKey = $"product:{id}";
             //var cached = await _cacheService.GetAsync<ProductDto>(cacheKey);
             //if (cached != null) return Result<ProductDto>.Success(cached);
+            var product1 = await _unitOfWork.Products.test(
+                p => p.Id == id,
+                take: null,
+                skip: null,
+                orderBy: null,
+                orderByDirection: OrderByOptions.Ascending,
+                p => p.Category,
+                p => p.productPhotos,
+                p => p.productVariants.SelectMany(pv => pv.VariantAttributes).Select(va => va.Attribute),
+                p => p.Supplier.User
+            );
 
-            var product = await _unitOfWork.Products.FindAsync(p => p.Id == id, 
+            var product = await _unitOfWork.Products.FindAsync(p => p.Id == id,
                 includes: new[] { "Category", "productPhotos", "productVariants.VariantAttributes.Attribute", "Supplier.User" });
+
 
             if (product is null) return Result<ProductDto>.Failure("Product not found", "404");
 
@@ -87,9 +99,9 @@ namespace MyShop.CORE.Implmentations
 
         public async Task<Result<PageResult<ProductDto>>> GetAllProductsAsync(SearchFilterOptions? filter)
         {
-            string cacheKey = $"products:all_{filter?.PageNumber}_{filter?.PageSize}_{filter?.SearchTerm}_{filter?.CategoryId}_{filter?.MinPrice}_{filter?.MaxPrice}_{filter?.IsFasting}_{filter?.HaveSale}";
-            var cached = await _cacheService.GetAsync<PageResult<ProductDto>>(cacheKey);
-            if (cached != null) return Result<PageResult<ProductDto>>.Success(cached);
+            //string cacheKey = $"products:all_{filter?.PageNumber}_{filter?.PageSize}_{filter?.SearchTerm}_{filter?.CategoryId}_{filter?.MinPrice}_{filter?.MaxPrice}_{filter?.IsFasting}_{filter?.HaveSale}";
+            //var cached = await _cacheService.GetAsync<PageResult<ProductDto>>(cacheKey);
+            //if (cached != null) return Result<PageResult<ProductDto>>.Success(cached);
 
             int page = filter?.PageNumber ?? 1;
             int size = filter?.PageSize ?? 8;
@@ -108,21 +120,14 @@ namespace MyShop.CORE.Implmentations
                 size,
                 p => p.Popularity,
                 OrderByOptions.Descending,
-                new[] { "productPhotos", "productVariants" }
+                new[] { "productPhotos", "productVariants",nameof(Product.Category) }
             );
 
             var count = await _unitOfWork.Products.CountAsync(criteria);
 
             var productDtos = _mapper.Map<List<ProductDto>>(products.ToList());
             
-            // Resolve URLs
-            foreach (var p in productDtos)
-            {
-                foreach (var photo in p.ProductPhotos)
-                {
-                    photo.Url = $"{PhotosFolder}/{photo.Url}";
-                }
-            }
+            
 
             var result = new PageResult<ProductDto>
             {
@@ -132,7 +137,7 @@ namespace MyShop.CORE.Implmentations
                 PageSize = size
             };
 
-            await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(10));
+            //await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(10));
             return Result<PageResult<ProductDto>>.Success(result);
         }
 
@@ -298,14 +303,7 @@ namespace MyShop.CORE.Implmentations
             variant.ProductId = productId;
             variant.OldPrice = dto.Price;
             variant.NewPrice = dto.Price;
-            foreach(var attr in dto.Attributes)
-            {
-                variant.VariantAttributes.Add(new VariantAttribute
-                {
-                    AttributeId = attr.AttributeId,
-                    Value = attr.Value
-                });
-            }
+            
             await _unitOfWork.ProductVariants.AddAsync(variant);
             await _unitOfWork.CompleteAsync();
 
@@ -318,10 +316,15 @@ namespace MyShop.CORE.Implmentations
             var variant = await _unitOfWork.ProductVariants.FindAsync(v => v.Id == variantId, includes: new[] { "VariantAttributes" });
             if (variant == null || variant.ProductId != productId) return Result<ProductVariantDto>.Failure("Variant not found", "404");
 
-            if (dto.Price < variant.NewPrice) variant.OldPrice = variant.NewPrice;
-            else variant.OldPrice = dto.Price;
+            if (dto.Price < variant.NewPrice)
+                variant.OldPrice = variant.NewPrice;
+            else
+                variant.OldPrice = dto.Price;
+            variant.NewPrice = dto.Price;
+            
             
             _mapper.Map(dto, variant);
+            
             _unitOfWork.ProductVariants.Update(variant);
             await _unitOfWork.CompleteAsync();
 
@@ -342,9 +345,10 @@ namespace MyShop.CORE.Implmentations
         }
 
 
-        public async Task<Result<PageResult<ProductDto>>> GetProductsBySellerAsync(Guid sellerId, SearchFilterOptions filter)
+        public async Task<Result<PageResult<ProductDto>>> GetProductsBySellerAsync(Guid sellerId, SearchFilterOptions? filter)
         {
-            
+            if(filter == null)
+                filter = new SearchFilterOptions();
             filter.SearchTerm = filter.SearchTerm ?? ""; 
             
             int page = filter.PageNumber ?? 1;

@@ -103,6 +103,7 @@ namespace MyShop.INFRASTRUCTURE.Repositories
                 else
                     query = query.OrderByDescending(orderBy);
             }
+            
             if (includes != null)
                 foreach (var incluse in includes)
                     query = query.Include(incluse);
@@ -112,7 +113,7 @@ namespace MyShop.INFRASTRUCTURE.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>>? criteria, int? skip, int? take,
+        public virtual async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>>? criteria, int? skip, int? take,
             Expression<Func<T, object>>? orderBy = null, OrderByOptions orderByDirection = OrderByOptions.Ascending, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();

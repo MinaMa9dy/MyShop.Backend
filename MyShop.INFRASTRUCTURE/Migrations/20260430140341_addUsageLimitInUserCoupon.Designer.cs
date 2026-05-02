@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyShop.INFRASTRUCTURE.Context;
 
@@ -11,9 +12,11 @@ using MyShop.INFRASTRUCTURE.Context;
 namespace MyShop.INFRASTRUCTURE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430140341_addUsageLimitInUserCoupon")]
+    partial class addUsageLimitInUserCoupon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,7 +144,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.CartItem", b =>
@@ -159,7 +162,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.Category", b =>
@@ -182,7 +185,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("SuperCategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.Coupon", b =>
@@ -225,7 +228,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coupons", (string)null);
+                    b.ToTable("Coupons");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.Customer", b =>
@@ -235,7 +238,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.OrderEntities.Order", b =>
@@ -304,7 +307,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.OrderEntities.OrderItem", b =>
@@ -338,7 +341,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.Product", b =>
@@ -378,7 +381,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.ProductCoupon", b =>
@@ -396,7 +399,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("CouponId");
 
-                    b.ToTable("ProductCoupons", (string)null);
+                    b.ToTable("ProductCoupons");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.ProductPhoto", b =>
@@ -426,7 +429,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPhotos", (string)null);
+                    b.ToTable("ProductPhotos");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.ProductVariant", b =>
@@ -461,7 +464,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductVariants", (string)null);
+                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.Review", b =>
@@ -492,7 +495,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.Seller", b =>
@@ -502,7 +505,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Sellers", (string)null);
+                    b.ToTable("Sellers");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.UserCoupon", b =>
@@ -537,7 +540,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("UserCoupons", (string)null);
+                    b.ToTable("UserCoupons");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.UserPhoto", b =>
@@ -565,7 +568,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserPhotos", (string)null);
+                    b.ToTable("UserPhotos");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.VariantAttribute", b =>
@@ -590,7 +593,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("VariantId");
 
-                    b.ToTable("VariantAttributes", (string)null);
+                    b.ToTable("VariantAttributes");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Entities.WishList", b =>
@@ -605,7 +608,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("WishLists", (string)null);
+                    b.ToTable("WishLists");
                 });
 
             modelBuilder.Entity("MyShop.CORE.Identity.ApplicationRole", b =>
@@ -744,7 +747,7 @@ namespace MyShop.INFRASTRUCTURE.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

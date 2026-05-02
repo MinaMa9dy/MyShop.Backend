@@ -9,7 +9,6 @@ namespace MyShop.CORE.Dtos.Wish
 {
     public class WishDto
     {
-        public Guid CustomerId { get; set; }
         public Guid ProductId { get; set; }
         public ProductDto? Product { get; set; }
     }
