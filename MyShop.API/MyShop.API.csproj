@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyShop.CORE\MyShop.CORE.csproj" />
     <ProjectReference Include="..\MyShop.INFRASTRUCTURE\MyShop.INFRASTRUCTURE.csproj" />
     <ProjectReference Include="..\MyShop.Application\MyShop.Application.csproj" />
   </ItemGroup>

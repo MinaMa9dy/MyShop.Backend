@@ -1,11 +1,11 @@
 using AutoMapper;
-using Identity.Core.Interfaces;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyShop.CORE.Dtos.Order;
-using MyShop.CORE.Entities;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.DTOs.Order;
+using MyShop.Domain.Entities;
+using MyShop.Application.Interfaces;
 using System.Security.Claims;
 
 namespace MyShop.API.Controllers
@@ -27,8 +27,7 @@ namespace MyShop.API.Controllers
         public async Task<IActionResult> GetAllOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _orderService.GetAllOrdersAsync(page, pageSize);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
 
         [HttpGet("my-orders")]
@@ -39,16 +38,14 @@ namespace MyShop.API.Controllers
             var userId = Guid.Parse(userIdClaim);
             
             var result = await _orderService.GetOrdersByCustomerId(userId);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(Guid id)
         {
             var result = await _orderService.GetOrderByIdAsync(id);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
 
         [HttpPost]
@@ -58,8 +55,7 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _orderService.CreateOrder(userId, order);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
 
         [Authorize(Roles="Seller")]
@@ -70,8 +66,7 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _orderService.GetOrdersBySellerId(userId);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
 
         [Authorize(Roles = "Admin")]
@@ -79,8 +74,7 @@ namespace MyShop.API.Controllers
         public async Task<IActionResult> UpdateOrderStatus(UpdateOrderStatusDto dto)
         {
             var result = await _orderService.UpdateOrderStatusAsync(dto);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
 
         [HttpPatch("{id}/cancel")]
@@ -90,8 +84,7 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _orderService.CancelOrderAsync(userId, id);
-            if (!result.IsSuccess) return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
     }
 }

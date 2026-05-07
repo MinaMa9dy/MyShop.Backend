@@ -1,12 +1,12 @@
-using Identity.Core.Interfaces;
+using MyShop.Application.Interfaces.Auth;
 
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using MyShop.Core.Settings;
+using MyShop.Domain.Settings;
 
-namespace Identity.Infrastructure.Services
+namespace MyShop.INFRASTRUCTURE.Services
 {
     public class EmailService : IEmailService
     {

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyShop.CORE.Dtos.Review;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.DTOs.Review;
+using MyShop.Application.Interfaces;
 
 using System.Security.Claims;
 
@@ -26,21 +26,13 @@ namespace MyShop.API.Controllers
         {
             
             var result = await _reviewService.AddReview(review);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            }
-            return Ok(result.Data);
+            return StatusCode(result.Status, result);
         }
         [HttpGet("Product/{ProductId}")]
         public async Task<IActionResult> GetReviewsByProduct(Guid productId)
         {
             var result = await _reviewService.GetReviewsByProductId(productId);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            }
-            return Ok(result.Data);
+            return StatusCode(result.Status, result);
         }
     }
 }

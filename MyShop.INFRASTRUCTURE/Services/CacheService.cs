@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.Interfaces;
 using StackExchange.Redis;
 using System;
 using System.Linq;

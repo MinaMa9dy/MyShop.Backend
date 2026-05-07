@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyShop.CORE.Dtos.Category;
-using MyShop.CORE.Entities;
-using MyShop.CORE.RepositoriyInterfaces;
+using MyShop.Domain.Entities.OrderEntities;
+using Microsoft.EntityFrameworkCore;
+using MyShop.Domain.Entities;
+using MyShop.Domain.RepositoryInterfaces;
 using MyShop.INFRASTRUCTURE.Context;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using MyShop.Application.DTOs.Category;
 
 namespace MyShop.INFRASTRUCTURE.Repositories
 {
@@ -19,17 +20,41 @@ namespace MyShop.INFRASTRUCTURE.Repositories
         {
             _context = appDbContext;
         }
-        public async Task<List<GetCategoryDto>> GetCategoriesWithProductsCount()
+
+        public async Task<bool> IsParentAsync(Guid Category, Guid ParentCategory)
         {
-            return await _context.Categories
-                .Where(c=>c.SuperCategory!=null)
-                .Select(c => new GetCategoryDto
+            Guid? category = Category;
+            while(category is not null)
+            {
+                if(category == ParentCategory)
+                    return true;
+                category = await _context.Categories.Where(c => c.Id == category).Select(c => c.SuperCategoryId).FirstOrDefaultAsync();
+            }
+            return false;
+        }
+        public async Task<List<Guid>> GetSelfAndDescendantIdsAsync(Guid categoryId)
+        {
+            var result = new List<Guid> { categoryId };
+            var queue = new Queue<Guid>();
+            queue.Enqueue(categoryId);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+
+                var children = await _context.Categories
+                    .Where(c => c.SuperCategoryId == current)
+                    .Select(c => c.Id)
+                    .ToListAsync();
+
+                foreach (var child in children)
                 {
-                    Id = c.Id,
-                    Name = c.Name,
-                    ProductsCount = c.Products.Count()
-                })
-                .ToListAsync();
+                    result.Add(child);
+                    queue.Enqueue(child);
+                }
+            }
+
+            return result;
         }
     }
 }

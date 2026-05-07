@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MyShop.CORE.Entities;
-using MyShop.CORE.Identity;
+using MyShop.Domain.Entities;
+using MyShop.Domain.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

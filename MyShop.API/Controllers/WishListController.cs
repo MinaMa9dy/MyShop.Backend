@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyShop.CORE.Dtos.Wish;
-using MyShop.CORE.Entities;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.DTOs.Wish;
+using MyShop.Domain.Entities;
+using MyShop.Application.Interfaces;
 using System.Security.Claims;
 
 namespace MyShop.API.Controllers
@@ -27,11 +27,7 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _wishService.AddWish(userId,wish);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(int.Parse(result.Error.Code), result);
-            }
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
         [HttpGet]
         public async Task<IActionResult> GetWishesByUserId()
@@ -40,11 +36,7 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _wishService.GetWishesByUserId(userId);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(int.Parse(result.Error.Code), result);
-            }
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
         [HttpDelete("{productId}")]
         public async Task<IActionResult> RemoveWish(Guid productId)
@@ -54,11 +46,7 @@ namespace MyShop.API.Controllers
             var userId = Guid.Parse(userIdClaim);
             var wishDto = new WishDto { ProductId = productId };
             var result = await _wishService.RemoveWish(userId,wishDto);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(int.Parse(result.Error.Code), result);
-            }
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
     }
 }

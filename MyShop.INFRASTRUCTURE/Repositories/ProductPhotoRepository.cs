@@ -1,6 +1,7 @@
-using MyShop.CORE.Entities;
-using MyShop.CORE.RepositoriyInterfaces;
+using MyShop.Domain.Entities.OrderEntities;
+using MyShop.Domain.RepositoryInterfaces;
 using MyShop.INFRASTRUCTURE.Context;
+using MyShop.Domain.Entities.ProductEntities;
 
 namespace MyShop.INFRASTRUCTURE.Repositories
 {

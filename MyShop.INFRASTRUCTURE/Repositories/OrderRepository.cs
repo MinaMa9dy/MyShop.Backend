@@ -1,6 +1,8 @@
-﻿using MyShop.CORE.Entities.OrderEntities;
+using MyShop.Domain.Entities;
+using MyShop.Domain.Entities.OrderEntities;
+using MyShop.Domain.Entities.OrderEntities;
 
-using MyShop.CORE.RepositoriyInterfaces;
+using MyShop.Domain.RepositoryInterfaces;
 using MyShop.INFRASTRUCTURE.Context;
 using System;
 using System.Collections.Generic;

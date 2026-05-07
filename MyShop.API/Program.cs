@@ -1,5 +1,5 @@
-using MyShop.CORE.Identity;
-using MyShop.CORE.Interfaces;
+using MyShop.Domain.Identity;
+using MyShop.Application.Interfaces;
 using MyShop.INFRASTRUCTURE.Context;
 using Microsoft.AspNetCore.Authentication.Google;
 using MyShop.INFRASTRUCTURE.Repositories;
@@ -15,16 +15,16 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 
-using MyShop.CORE;
+using MyShop.Application;
 using MyShop.INFRASTRUCTURE;
-using MyShop.CORE.FluentValidation.Auth;
-using MyShop.CORE.FluentValidation;
+using MyShop.Application.Validators.Auth;
+using MyShop.Application.Validators;
 using FluentValidation.AspNetCore;
 using MyShop.API.Hubs;
 using MyShop.API.Services;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Filters;
-using MyShop.Core.Settings;
+using MyShop.Domain.Settings;
 using StackExchange.Redis;
 using Microsoft.OpenApi;
 
@@ -64,7 +64,7 @@ namespace MyShop.API
 
             
             // Add services to the container.
-            builder.Services.AddCoreDependances();
+            builder.Services.AddApplicationDependencies();
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
             builder.Services.AddInfrasturctureDependances();

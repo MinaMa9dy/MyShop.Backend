@@ -1,4 +1,4 @@
-using MyShop.CORE.Identity;
+using MyShop.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,8 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 
-using MyShop.CORE.Entities;
-using MyShop.CORE.Entities.OrderEntities;
+using MyShop.Domain.Entities;
+using MyShop.Domain.Entities.OrderEntities;
+using MyShop.Domain.Entities.ProductEntities;
+using MyShop.Domain.Entities.CouponEntities;
 
 namespace MyShop.INFRASTRUCTURE.Context
 {
@@ -22,7 +24,7 @@ namespace MyShop.INFRASTRUCTURE.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<CORE.Entities.Attribute>(builder =>
+            modelBuilder.Entity<MyShop.Domain.Entities.Attribute>(builder =>
             {
                 builder.Property(a => a.Name).IsUnicode(true);
                 builder.Property(a => a.DataType).IsUnicode(true);
@@ -65,7 +67,7 @@ namespace MyShop.INFRASTRUCTURE.Context
         public DbSet<ProductCoupon> ProductCoupons { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<CORE.Entities.Attribute> Attributes { get; set; }
+        public DbSet<MyShop.Domain.Entities.Attribute> Attributes { get; set; }
         public DbSet<VariantAttribute> VariantAttributes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<UserCoupon> UserCoupons { get; set; }

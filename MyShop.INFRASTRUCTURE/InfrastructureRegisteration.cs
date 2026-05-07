@@ -1,8 +1,7 @@
-using Identity.Core.Interfaces;
-using Identity.Core.Services;
-using Identity.Infrastructure.Services;
+using MyShop.Application.Interfaces.Auth;
 using Microsoft.Extensions.DependencyInjection;
-using MyShop.CORE.Interfaces;
+using MyShop.Domain.RepositoryInterfaces;
+using MyShop.Application.Interfaces;
 using MyShop.INFRASTRUCTURE.Repositories;
 using MyShop.INFRASTRUCTURE.Services;
 using System;

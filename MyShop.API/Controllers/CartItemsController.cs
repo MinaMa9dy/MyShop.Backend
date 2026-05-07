@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyShop.CORE.Dtos.CartItem;
-using MyShop.CORE.Implmentations;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.DTOs.CartItem;
+
+using MyShop.Application.Interfaces;
 using System.Security.Claims;
 
 namespace MyShop.API.Controllers
@@ -25,20 +25,16 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _cartItemsService.AddToCartAsync(userId, cartItem);
-            if (!result.IsSuccess)
-                return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateCartItem([FromBody] CartItemUpdateDto cartItem)
+        public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartItemDto cartItem)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _cartItemsService.UpdateQuantityAsync(userId, cartItem);
-            if (!result.IsSuccess)
-                return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
 
         }
         [HttpDelete]
@@ -48,9 +44,7 @@ namespace MyShop.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             var userId = Guid.Parse(userIdClaim);
             var result = await _cartItemsService.RemoveFromCartAsync(userId, cartItemId);
-            if (!result.IsSuccess)
-                return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
     }
 }

@@ -1,15 +1,15 @@
 
-using Identity.Core.Interfaces;
+using MyShop.Application.Interfaces.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MyShop.Core.Settings;
-using MyShop.CORE.Identity;
+using MyShop.Domain.Settings;
+using MyShop.Domain.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Identity.Core.Services
+namespace MyShop.INFRASTRUCTURE.Services
 {
     public class TokenService : ITokenService
     {

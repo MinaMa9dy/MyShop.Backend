@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MyShop.CORE.Entities.OrderEntities;
+using MyShop.Domain.Entities.OrderEntities;
 
 namespace MyShop.INFRASTRUCTURE.Configs
 {

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyShop.CORE\MyShop.CORE.csproj" />
     <ProjectReference Include="..\MyShop.Application\MyShop.Application.csproj" />
     <ProjectReference Include="..\MyShop.Domain\MyShop.Domain.csproj" />
   </ItemGroup>
@@ -25,6 +24,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
   </ItemGroup>
 
 </Project>

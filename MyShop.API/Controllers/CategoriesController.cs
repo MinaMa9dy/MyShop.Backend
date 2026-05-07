@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyShop.CORE.Dtos.Category;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.DTOs.Category;
+using MyShop.Application.Interfaces;
 
 namespace MyShop.API.Controllers
 {
@@ -24,17 +24,13 @@ namespace MyShop.API.Controllers
         public async Task<IActionResult> AddCategory(AddCategoryDto addCategoryDto)
         {
             var result = await _categoryService.AddCategoryAsync(addCategoryDto);
-            if(result.IsSuccess == false)
-            {
-                return StatusCode(int.Parse(result.Error.Code), result.Error.Message);
-            }
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
         [HttpGet]
         public async Task<IActionResult> GetCategories()
         {
-            var categories = await _categoryService.GetAllCategories();
-            return Ok(categories);
+            var result = await _categoryService.GetAllCategories();
+            return StatusCode(result.Status, result);
         }
     }
 }

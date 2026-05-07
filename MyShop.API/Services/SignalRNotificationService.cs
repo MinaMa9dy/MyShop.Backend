@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
-using MyShop.CORE.Dtos.Order;
-using MyShop.CORE.Interfaces;
+using MyShop.Application.DTOs.Order;
+using MyShop.Application.Interfaces;
 using MyShop.API.Hubs;
 using System;
 using System.Threading.Tasks;

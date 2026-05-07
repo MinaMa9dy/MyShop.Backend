@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
-using MyShop.CORE.Dtos.Order;
+using MyShop.Application.DTOs.Order;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

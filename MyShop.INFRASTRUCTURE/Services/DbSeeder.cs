@@ -1,4 +1,4 @@
-using MyShop.CORE.Entities;
+using MyShop.Domain.Entities;
 using MyShop.INFRASTRUCTURE.Context;
 using System;
 using System.Collections.Generic;
@@ -13,12 +13,12 @@ namespace MyShop.INFRASTRUCTURE.Services
         {
             if (!context.Attributes.Any())
             {
-                var attributes = new List<CORE.Entities.Attribute>
+                var attributes = new List<MyShop.Domain.Entities.Attribute>
                 {
-                    new CORE.Entities.Attribute { Id = Guid.NewGuid(), Name = "اللون", DataType = "Color" },
-                    new CORE.Entities.Attribute { Id = Guid.NewGuid(), Name = "المقاس", DataType = "Size" },
-                    new CORE.Entities.Attribute { Id = Guid.NewGuid(), Name = "الوزن", DataType = "Weight" },
-                    new CORE.Entities.Attribute { Id = Guid.NewGuid(), Name = "النوع", DataType = "Type" }
+                    new MyShop.Domain.Entities.Attribute { Id = Guid.NewGuid(), Name = "اللون", DataType = "Color" },
+                    new MyShop.Domain.Entities.Attribute { Id = Guid.NewGuid(), Name = "المقاس", DataType = "Size" },
+                    new MyShop.Domain.Entities.Attribute { Id = Guid.NewGuid(), Name = "الوزن", DataType = "Weight" },
+                    new MyShop.Domain.Entities.Attribute { Id = Guid.NewGuid(), Name = "النوع", DataType = "Type" }
                 };
 
                 await context.Attributes.AddRangeAsync(attributes);

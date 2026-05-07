@@ -1,4 +1,6 @@
-﻿using MyShop.CORE.RepositoriyInterfaces;
+using MyShop.Domain.Entities;
+using MyShop.Domain.Entities.OrderEntities;
+using MyShop.Domain.RepositoryInterfaces;
 using MyShop.INFRASTRUCTURE.Context;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MyShop.INFRASTRUCTURE.Repositories
 {
-    public class AttributeRepository : BaseRepository<CORE.Entities.Attribute>, IAttributeRepository
+    public class AttributeRepository : BaseRepository<MyShop.Domain.Entities.Attribute>, IAttributeRepository
     {
         public AttributeRepository(AppDbContext appDbContext) : base(appDbContext)
         {
